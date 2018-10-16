@@ -19,6 +19,7 @@ open class PieChartDataSet: ChartDataSet, IPieChartDataSet
     {
         case insideSlice
         case outsideSlice
+        case insideAndOutsideSlice
     }
 
     private func initialize()

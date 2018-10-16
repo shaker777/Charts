@@ -28,6 +28,9 @@ open class PieChartView: PieRadarChartViewBase
     /// array that holds the width of each pie-slice in degrees
     private var _drawAngles = [CGFloat]()
     
+    ///
+//    private var _drawRadii = [CGFloat]()
+    
     /// array that holds the absolute angle in degrees of each slice
     private var _absoluteAngles = [CGFloat]()
     
@@ -71,7 +74,15 @@ open class PieChartView: PieRadarChartViewBase
     
     /// maximum angle for this pie
     private var _maxAngle: CGFloat = 360.0
+    
+    ///draw dot circle
+    private var _drawTotalCircle: Bool = false
+    
+    private var _totalCircleColor: UIColor = UIColor.black
 
+    private var _totalCircleFont: UIFont = UIFont.systemFont(ofSize: 12)
+
+    
     public override init(frame: CGRect)
     {
         super.init(frame: frame)
@@ -210,7 +221,6 @@ open class PieChartView: PieRadarChartViewBase
                 guard let e = set.entryForIndex(j) else { continue }
                 
                 _drawAngles.append(calcAngle(value: abs(e.y), yValueSum: yValueSum))
-
                 if cnt == 0
                 {
                     _absoluteAngles.append(_drawAngles[cnt])
@@ -302,7 +312,39 @@ open class PieChartView: PieRadarChartViewBase
     {
         return _drawAngles
     }
+    
+    /// - returns: An integer array of all the different angles the chart slices
+    /// have the angles in the returned array determine how much space (of 360°)
+    /// each slice takes
+    @objc open var drawRadii: [CGFloat]
+    {
+        guard let data = _data else { return [] }
 
+        var _drawRadii = [CGFloat]()
+        let entryCount = data.entryCount
+        var dataSets = data.dataSets
+
+        _drawRadii.reserveCapacity(entryCount)
+
+        for i in 0 ..< data.dataSetCount
+        {
+            let set = dataSets[i]
+            let entryCount = set.entryCount
+            
+            for j in 0 ..< entryCount
+            {
+                guard let e = set.entryForIndex(j) else { continue }
+                _drawRadii.append(CGFloat(e.x/e.y) * radius)
+            }
+        }
+        return _drawRadii;
+    }
+    
+    @objc open var maxRadius: CGFloat
+    {
+         return drawRadii.max() ?? 0
+    }
+    
     /// - returns: The absolute angles of the different chart slices (where the
     /// slices end)
     @objc open var absoluteAngles: [CGFloat]
@@ -637,6 +679,46 @@ open class PieChartView: PieRadarChartViewBase
             {
                 _maxAngle = 90.0
             }
+        }
+    }
+    
+    @objc open var drawTotalCircle: Bool
+        {
+        get
+        {
+            return _drawTotalCircle
+        }
+        set
+        {
+            _drawTotalCircle = newValue
+            setNeedsDisplay()
+        }
+    }
+    
+    
+    @objc open var totalCircleColor: UIColor
+        {
+        get
+        {
+            return _totalCircleColor
+        }
+        set
+        {
+            _totalCircleColor = newValue
+            setNeedsDisplay()
+        }
+    }
+    
+    @objc open var totalCircleFont: UIFont
+        {
+        get
+        {
+            return _totalCircleFont
+        }
+        set
+        {
+            _totalCircleFont = newValue
+            setNeedsDisplay()
         }
     }
 }

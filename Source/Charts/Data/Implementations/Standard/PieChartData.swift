@@ -127,4 +127,19 @@ open class PieChartData: ChartData
         
         return yValueSum
     }
+    
+    /// - returns: The total x-value sum across all DataSet objects the this object represents.
+    @objc open var xValueSum: Double
+    {
+        guard let dataSet = dataSet else { return 0.0 }
+        
+        var xValueSum: Double = 0.0
+        
+        for i in 0..<dataSet.entryCount
+        {
+            xValueSum += dataSet.entryForIndex(i)?.x ?? 0.0
+        }
+        
+        return xValueSum
+    }
 }
