@@ -122,7 +122,7 @@ open class PieChartView: PieRadarChartViewBase
         
         if (valuesToHighlight())
         {
-            renderer.drawHighlighted(context: context, indices: _indicesToHighlight)
+//            renderer.drawHighlighted(context: context, indices: _indicesToHighlight)
         }
         
         renderer.drawExtras(context: context)

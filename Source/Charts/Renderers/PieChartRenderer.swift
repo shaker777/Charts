@@ -166,8 +166,8 @@ open class PieChartRenderer: DataRenderer
             // draw only if the value is greater than zero
             if (abs(e.y) > Double.ulpOfOne)
             {
-                if !chart.needsHighlight(index: j)
-                {
+//                if !chart.needsHighlight(index: j)
+//                {
                     let accountForSliceSpacing = sliceSpace > 0.0 && sliceAngle <= 180.0
                     
                     
@@ -261,11 +261,6 @@ open class PieChartRenderer: DataRenderer
                         }
                     }
                     
-                    path.closeSubpath()
-                    paths.append(path);
-                    
-                    
-                    
                     let axElement = createAccessibleElement(withIndex: j,
                                                             container: chart,
                                                             dataSet: dataSet)
@@ -274,7 +269,10 @@ open class PieChartRenderer: DataRenderer
                     }
                     
                     accessibleChartElements.append(axElement)
-                }
+//                }
+                
+                path.closeSubpath()
+                paths.append(path);
             }
             
             angle += sliceAngle * CGFloat(phaseX)
@@ -314,11 +312,11 @@ open class PieChartRenderer: DataRenderer
 
         
         context.saveGState()
-        for j in 0 ..< entryCount
+        for j in 0 ..< paths.count
         {
             let path = paths[j]
             let color = dataSet.color(atIndex: j).cgColor
-                
+            
             context.setFillColor(color)
             context.beginPath()
             context.addPath(path)
