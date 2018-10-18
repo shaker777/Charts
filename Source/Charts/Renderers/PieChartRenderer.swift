@@ -509,12 +509,13 @@ open class PieChartRenderer: DataRenderer
                         context.setLineWidth(dataSet.valueLineWidth)
                         
                         let lineEndRadius = sliceRadius - 10
+                        let bottomPadding: CGFloat = 5;
                         if sliceXBase < 0{
-                            context.move(to: CGPoint(x: labelDrawPoint.x-valueTextSize.width/2, y: labelDrawPoint.y + valueTextSize.height))
-                            context.addLine(to: CGPoint(x: labelDrawPoint.x+valueTextSize.width/2, y: labelDrawPoint.y + valueTextSize.height))
+                            context.move(to: CGPoint(x: labelDrawPoint.x-valueTextSize.width/2, y: labelDrawPoint.y + valueTextSize.height + bottomPadding))
+                            context.addLine(to: CGPoint(x: labelDrawPoint.x+valueTextSize.width/2, y: labelDrawPoint.y + valueTextSize.height + bottomPadding))
                         }else{
-                            context.move(to: CGPoint(x: labelDrawPoint.x+valueTextSize.width/2, y: labelDrawPoint.y + valueTextSize.height))
-                            context.addLine(to: CGPoint(x: labelDrawPoint.x-valueTextSize.width/2, y: labelDrawPoint.y + valueTextSize.height))
+                            context.move(to: CGPoint(x: labelDrawPoint.x+valueTextSize.width/2, y: labelDrawPoint.y + valueTextSize.height + bottomPadding))
+                            context.addLine(to: CGPoint(x: labelDrawPoint.x-valueTextSize.width/2, y: labelDrawPoint.y + valueTextSize.height + bottomPadding))
                         }
                         context.addLine(to: CGPoint(x: lineEndRadius * sliceXBase + center.x, y: lineEndRadius * sliceYBase + center.y))
                         
