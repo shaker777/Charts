@@ -159,7 +159,7 @@ open class PieChartRenderer: DataRenderer
         {
             let sliceAngle = drawAngles[j]
             var innerRadius = userInnerRadius
-            let sliceRadius = varRadius == true ? drawRadii[j] : totalRadius
+            let sliceRadius = varRadius == true ? drawRadii[j] * chart.dataScale : totalRadius
 
             guard let e = dataSet.entryForIndex(j) else { continue }
             let path = CGMutablePath();
@@ -287,7 +287,8 @@ open class PieChartRenderer: DataRenderer
         let entryCount = dataSet.entryCount
         let paths = getDataSetPaths(dataSet: dataSet)
         let center = chart.centerCircleBox
-        let radius = chart.radius
+        let radius = chart.radius * chart.dataScale
+//        let dataScale =
 
         accessibilityPostLayoutChangedNotification()
         
@@ -428,7 +429,7 @@ open class PieChartRenderer: DataRenderer
                 }
                 
                 let sliceAngle = drawAngles[xIndex]
-                let sliceRadius = drawRadii[xIndex]
+                let sliceRadius = drawRadii[xIndex] * chart.dataScale
                 let sliceSpace = getSliceSpace(dataSet: dataSet)
                 let sliceSpaceMiddleAngle = (sliceSpace / sliceRadius).DEG2RAD
                 let slicePath = paths[j]
@@ -505,10 +506,10 @@ open class PieChartRenderer: DataRenderer
                     
                     if dataSet.valueLineColor != nil && (drawMiddle || drawOutside)
                     {
+                        let lineEndRadius = sliceRadius - 10
                         context.setStrokeColor(dataSet.valueLineColor!.cgColor)
                         context.setLineWidth(dataSet.valueLineWidth)
                         
-                        let lineEndRadius = sliceRadius - 10
                         let bottomPadding: CGFloat = 5;
                         if sliceXBase < 0{
                             context.move(to: CGPoint(x: labelDrawPoint.x-valueTextSize.width/2, y: labelDrawPoint.y + valueTextSize.height + bottomPadding))

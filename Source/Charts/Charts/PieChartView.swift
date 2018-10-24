@@ -512,7 +512,34 @@ open class PieChartView: PieRadarChartViewBase
     
     open override var radius: CGFloat
     {
-        return _circleBox.width / 2.0
+        let radius = _circleBox.width / 2.0
+        return radius;
+    }
+    
+    open var realRadius: CGFloat
+    {
+       return _circleBox.width / 2.0
+    }
+    
+    open var dataScale: CGFloat{
+        guard let data = _data else { return 1 }
+        
+        var dataSets = data.dataSets
+        var scale: CGFloat = 1;
+        
+        for i in 0 ..< data.dataSetCount
+        {
+            let set = dataSets[i]
+            let entryCount = set.entryCount
+            
+            for j in 0 ..< entryCount
+            {
+                guard let e = set.entryForIndex(j) else { continue }
+                //scale = min(1.8, max(1, ))
+                scale = min(scale, max(0.5, CGFloat(e.y/e.x)))
+            }
+        }
+        return scale
     }
     
     /// - returns: The circlebox, the boundingbox of the pie-chart slices
