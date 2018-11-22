@@ -49,7 +49,7 @@ class LineChart2ViewController: DemoBaseViewController {
         l.font = UIFont(name: "HelveticaNeue-Light", size: 11)!
         l.textColor = .white
         l.horizontalAlignment = .left
-        l.verticalAlignment = .bottom
+        l.verticalAlignment = .top
         l.orientation = .horizontal
         l.drawInside = false
         

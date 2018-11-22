@@ -446,10 +446,10 @@ open class PieChartRenderer: DataRenderer
                 let valueTextCenter = CGPoint(x: valueTextSize.width/2, y: valueTextSize.height/2)
                 
                 
-                let valueTextRadii = [(0-valueTextCenter.x)/sliceXBase,
-                                      (valueTextSize.width-valueTextCenter.x)/sliceXBase,
-                                      (0-valueTextCenter.y)/sliceYBase,
-                                      (valueTextSize.height-valueTextCenter.y)/sliceYBase]
+//                let valueTextRadii = [(0-valueTextCenter.x)/sliceXBase,
+//                                      (valueTextSize.width-valueTextCenter.x)/sliceXBase,
+//                                      (0-valueTextCenter.y)/sliceYBase,
+//                                      (valueTextSize.height-valueTextCenter.y)/sliceYBase]
                 let valueTextRadius = [(0-valueTextCenter.x)/sliceXBase,
                                        (valueTextSize.width-valueTextCenter.x)/sliceXBase,
                                        (0-valueTextCenter.y)/sliceYBase,

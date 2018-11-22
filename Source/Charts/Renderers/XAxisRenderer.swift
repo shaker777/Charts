@@ -77,8 +77,8 @@ open class XAxisRenderer: AxisRendererBase
         
         xAxis.labelWidth = labelWidth
         xAxis.labelHeight = labelHeight
-        xAxis.labelRotatedWidth = labelRotatedSize.width
-        xAxis.labelRotatedHeight = labelRotatedSize.height
+        xAxis.labelRotatedWidth = labelRotatedSize.width + 15
+        xAxis.labelRotatedHeight = labelRotatedSize.height + 10
     }
     
     open override func renderAxisLabels(context: CGContext)

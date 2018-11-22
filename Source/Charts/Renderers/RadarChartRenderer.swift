@@ -72,6 +72,9 @@ open class RadarChartRenderer: LineRadarRenderer
                 }
             }
         }
+        
+        drawHole(context: context)
+        drawCenterText(context: context)
     }
     
     /// Draws the RadarDataSet
@@ -131,6 +134,9 @@ open class RadarChartRenderer: LineRadarRenderer
             else
             {
                 path.addLine(to: p)
+                let radius = dataSet.lineWidth * 3
+                context.setFillColor(dataSet.fillColor.cgColor)
+                context.fillEllipse(in: CGRect(x: p.x - radius / 2, y: p.y - radius / 2, width: radius, height: radius))
             }
 
             let accessibilityLabel = accessibilityAxisLabelValueTuples[j].0
@@ -159,6 +165,15 @@ open class RadarChartRenderer: LineRadarRenderer
         {
             // if this is not the largest set, draw a line to the center before closing
             path.addLine(to: center)
+        }
+        
+        if dataSet.formLineDashLengths != nil
+        {
+            context.setLineDash(phase: dataSet.formLineDashPhase, lengths: dataSet.formLineDashLengths!)
+        }
+        else
+        {
+            context.setLineDash(phase: 0.0, lengths: [])
         }
         
         path.closeSubpath()
@@ -304,9 +319,35 @@ open class RadarChartRenderer: LineRadarRenderer
         
         let center = chart.centerOffsets
         
+        
+        // draw the inner-web
+        context.setLineWidth(chart.innerWebLineWidth)
+        context.setStrokeColor(chart.innerWebColor.cgColor)
+        context.setAlpha(chart.webAlpha)
+        
+        let labelCount = chart.yAxis.entryCount
+        
+        for j in 0 ..< labelCount
+        {
+            for i in 0 ..< data.entryCount
+            {
+                let r = CGFloat(chart.yAxis.entries[j] - chart.chartYMin) * factor
+                
+                let p1 = center.moving(distance: r, atAngle: sliceangle * CGFloat(i) + rotationangle)
+                let p2 = center.moving(distance: r, atAngle: sliceangle * CGFloat(i + 1) + rotationangle)
+                
+                _webLineSegmentsBuffer[0].x = p1.x
+                _webLineSegmentsBuffer[0].y = p1.y
+                _webLineSegmentsBuffer[1].x = p2.x
+                _webLineSegmentsBuffer[1].y = p2.y
+                
+                context.strokeLineSegments(between: _webLineSegmentsBuffer)
+            }
+        }
+        
         // draw the web lines that come from the center
         context.setLineWidth(chart.webLineWidth)
-        context.setStrokeColor(chart.webColor.cgColor)
+        context.setStrokeColor(chart.webColors.first?.cgColor ?? UIColor.gray.cgColor)
         context.setAlpha(chart.webAlpha)
         
         let xIncrements = 1 + chart.skipWebLineCount
@@ -322,35 +363,136 @@ open class RadarChartRenderer: LineRadarRenderer
             _webLineSegmentsBuffer[1].x = p.x
             _webLineSegmentsBuffer[1].y = p.y
             
+            if chart.webColors.count > i{
+                let color = chart.webColors[i].cgColor
+                context.setStrokeColor(color)
+            }
             context.strokeLineSegments(between: _webLineSegmentsBuffer)
         }
         
-        // draw the inner-web
-        context.setLineWidth(chart.innerWebLineWidth)
-        context.setStrokeColor(chart.innerWebColor.cgColor)
-        context.setAlpha(chart.webAlpha)
-        
-        let labelCount = chart.yAxis.entryCount
-        
-        for j in 0 ..< labelCount
-        {
-            for i in 0 ..< data.entryCount
-            {
-                let r = CGFloat(chart.yAxis.entries[j] - chart.chartYMin) * factor
+        context.restoreGState()
+        context.saveGState();
 
-                let p1 = center.moving(distance: r, atAngle: sliceangle * CGFloat(i) + rotationangle)
-                let p2 = center.moving(distance: r, atAngle: sliceangle * CGFloat(i + 1) + rotationangle)
-                
-                _webLineSegmentsBuffer[0].x = p1.x
-                _webLineSegmentsBuffer[0].y = p1.y
-                _webLineSegmentsBuffer[1].x = p2.x
-                _webLineSegmentsBuffer[1].y = p2.y
-                
-                context.strokeLineSegments(between: _webLineSegmentsBuffer)
-            }
+        //draw bullets on outer web ends
+        context.setLineWidth(chart.webLineWidth)
+        context.setStrokeColor(UIColor.white.cgColor)
+
+        for i in stride(from: 0, to: maxEntryCount, by: xIncrements)
+        {
+            context.saveGState();
+            let p = center.moving(distance: CGFloat(chart.yRange) * factor,
+                                  atAngle: sliceangle * CGFloat(i) + rotationangle)
+
+            if chart.webColors.count > i{
+                let color = chart.webColors[i].cgColor
+                context.setFillColor(color)
+            };
+            
+            let holeRadius = chart.webLineHoleRadius
+            context.addArc(center: p, radius: holeRadius, startAngle: 0, endAngle: CGFloat(Double.pi*2), clockwise: true)
+            let shadow = UIColor.black.withAlphaComponent(0.5)
+            let shadowOffset = CGSize.init(width: 0, height: 0)
+            let shadowBlurRadius: CGFloat = 11
+            context.setShadow(offset: shadowOffset, blur: shadowBlurRadius, color: shadow.cgColor)
+            context.fillPath(using: .evenOdd)
+            
+            context.restoreGState()
+            context.saveGState();
+
+            
+            context.addArc(center: p, radius: holeRadius, startAngle: 0, endAngle: CGFloat(Double.pi*2), clockwise: true)
+            context.drawPath(using: .stroke)
+            context.restoreGState()
         }
+
         
         context.restoreGState()
+    }
+    
+    
+    /// draws the hole in the center of the chart and the transparent circle / hole
+    private func drawHole(context: CGContext)
+    {
+        guard let chart = chart else { return }
+        
+        if chart.drawHoleEnabled
+        {
+            context.saveGState()
+            
+            let radius = chart.radius
+            let holeRadius = radius * chart.holeRadiusPercent
+            let center = chart.center
+            
+            if let holeColor = chart.holeColor
+            {
+                if holeColor != NSUIColor.clear
+                {
+                    // draw the hole-circle
+                    context.beginPath()
+                    let path = CGMutablePath()
+                    path.addEllipse(in: CGRect(x: center.x - holeRadius, y: center.y - holeRadius, width: holeRadius * 2.0, height: holeRadius * 2.0))
+                    path.closeSubpath();
+                    context.addPath(path)
+                    context.setFillColor(chart.holeColor!.cgColor)
+                    let shadow = UIColor.black.withAlphaComponent(0.5)
+                    let shadowOffset = CGSize.init(width: 0, height: 0)
+                    let shadowBlurRadius: CGFloat = 11
+                    context.setShadow(offset: shadowOffset, blur: shadowBlurRadius, color: shadow.cgColor)
+                    context.fillPath(using: .evenOdd)
+                }
+            }
+            
+            context.restoreGState()
+        }
+    }
+    
+    /// draws the description text in the center of the pie chart makes most sense when center-hole is enabled
+    private func drawCenterText(context: CGContext)
+    {
+//        guard
+//            let chart = chart,
+//            let centerAttributedText = chart.centerAttributedText
+//            else { return }
+//
+//        if chart.drawCenterTextEnabled && centerAttributedText.length > 0
+//        {
+//            let center = chart.centerCircleBox
+//            let offset = chart.centerTextOffset
+//            let innerRadius = chart.drawHoleEnabled && !chart.drawSlicesUnderHoleEnabled ? chart.radius * chart.holeRadiusPercent : chart.radius
+//
+//            let x = center.x + offset.x
+//            let y = center.y + offset.y
+//
+//            let holeRect = CGRect(
+//                x: x - innerRadius,
+//                y: y - innerRadius,
+//                width: innerRadius * 2.0,
+//                height: innerRadius * 2.0)
+//            var boundingRect = holeRect
+//
+//            if chart.centerTextRadiusPercent > 0.0
+//            {
+//                boundingRect = boundingRect.insetBy(dx: (boundingRect.width - boundingRect.width * chart.centerTextRadiusPercent) / 2.0, dy: (boundingRect.height - boundingRect.height * chart.centerTextRadiusPercent) / 2.0)
+//            }
+//
+//            let textBounds = centerAttributedText.boundingRect(with: boundingRect.size, options: [.usesLineFragmentOrigin, .usesFontLeading, .truncatesLastVisibleLine], context: nil)
+//
+//            var drawingRect = boundingRect
+//            drawingRect.origin.x += (boundingRect.size.width - textBounds.size.width) / 2.0
+//            drawingRect.origin.y += (boundingRect.size.height - textBounds.size.height) / 2.0
+//            drawingRect.size = textBounds.size
+//
+//            context.saveGState()
+//
+//            let clippingPath = CGPath(ellipseIn: holeRect, transform: nil)
+//            context.beginPath()
+//            context.addPath(clippingPath)
+//            context.clip()
+//
+//            centerAttributedText.draw(with: drawingRect, options: [.usesLineFragmentOrigin, .usesFontLeading, .truncatesLastVisibleLine], context: nil)
+//
+//            context.restoreGState()
+//        }
     }
     
     private var _highlightPointBuffer = CGPoint()

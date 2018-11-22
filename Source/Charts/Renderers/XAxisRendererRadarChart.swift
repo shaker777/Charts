@@ -13,7 +13,7 @@ import Foundation
 import CoreGraphics
 
 #if !os(OSX)
-    import UIKit
+import UIKit
 #endif
 
 open class XAxisRendererRadarChart: XAxisRenderer
@@ -40,9 +40,9 @@ open class XAxisRendererRadarChart: XAxisRenderer
         }
         
         let labelFont = xAxis.labelFont
-        let labelTextColor = xAxis.labelTextColor
+        var labelTextColor = xAxis.labelTextColor
         let labelRotationAngleRadians = xAxis.labelRotationAngle.RAD2DEG
-        let drawLabelAnchor = CGPoint(x: 0.5, y: 0.25)
+        let drawLabelAnchor = CGPoint(x: 0.5, y: 0.5)
         
         let sliceangle = chart.sliceAngle
         
@@ -54,19 +54,38 @@ open class XAxisRendererRadarChart: XAxisRenderer
         for i in stride(from: 0, to: chart.data?.maxEntryCountSet?.entryCount ?? 0, by: 1)
         {
             
+            if chart.webColors.count > i{
+                labelTextColor = chart.webColors[i]
+            }
             let label = xAxis.valueFormatter?.stringForValue(Double(i), axis: xAxis) ?? ""
-            
             let angle = (sliceangle * CGFloat(i) + chart.rotationAngle).truncatingRemainder(dividingBy: 360.0)
             
-            let p = center.moving(distance: CGFloat(chart.yRange) * factor + xAxis.labelRotatedWidth / 2.0, atAngle: angle)
+            let valueTextSize = NSString(string: label).size(withAttributes: [NSAttributedStringKey.font : labelFont])
+            let valueTextCenter = CGPoint(x: valueTextSize.width/2, y: valueTextSize.height/2)
             
+            let sliceXBase = cos(angle.DEG2RAD)
+            let sliceYBase = sin(angle.DEG2RAD)
+            
+            let valueTextRadius = [(0-valueTextCenter.x)/sliceXBase,
+                                   (valueTextSize.width-valueTextCenter.x)/sliceXBase,
+                                   (0-valueTextCenter.y)/sliceYBase,
+                                   (valueTextSize.height-valueTextCenter.y)/sliceYBase].filter({ (a) -> Bool in
+                                    return a > 0
+                                   }) .min { (a, b) -> Bool in
+                                    return a < b
+                } ?? 0
+            
+
+            
+            let p = center.moving(distance: (CGFloat(chart.yRange) * factor + valueTextRadius + chart.webLineHoleRadius + 5), atAngle: angle)
             drawLabel(context: context,
                       formattedLabel: label,
                       x: p.x,
-                      y: p.y - xAxis.labelRotatedHeight / 2.0,
-                      attributes: [NSAttributedStringKey.font: labelFont, NSAttributedStringKey.foregroundColor: labelTextColor],
-                      anchor: drawLabelAnchor,
-                      angleRadians: labelRotationAngleRadians)
+                y: p.y,
+                attributes: [NSAttributedStringKey.font: labelFont, NSAttributedStringKey.foregroundColor: labelTextColor],
+                anchor: drawLabelAnchor,
+                angleRadians: labelRotationAngleRadians)
+            
         }
     }
     

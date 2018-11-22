@@ -76,7 +76,8 @@ class HalfPieChartViewController: DemoBaseViewController {
     func setDataCount(_ count: Int, range: UInt32) {
         let entries = (0..<count).map { (i) -> PieChartDataEntry in
             // IMPORTANT: In a PieChart, no values (Entry) should have the same xIndex (even if from different DataSets), since no values can be drawn above each other.
-            return PieChartDataEntry(value: Double(arc4random_uniform(range) + range / 5),
+            return PieChartDataEntry(value1: Double(arc4random_uniform(range) + range / 5),
+                                     value2: Double(arc4random_uniform(range) + range / 5),
                                      label: parties[i % parties.count])
         }
         

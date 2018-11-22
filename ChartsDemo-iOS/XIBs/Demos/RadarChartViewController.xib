@@ -1,22 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
-        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
-    <customFonts key="customFonts">
-        <array key="HelveticaNeueLights.ttc">
-            <string>HelveticaNeue-Light</string>
-        </array>
-    </customFonts>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="RadarChartViewController" customModule="ChartsDemo" customModuleProvider="target">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="RadarChartViewController" customModule="ChartsDemo_iOS" customModuleProvider="target">
             <connections>
                 <outlet property="chartView" destination="Oqd-Ej-1xl" id="tSA-aU-J9W"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
@@ -45,20 +39,20 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Oqd-Ej-1xl" customClass="RadarChartView" customModule="Charts">
-                    <rect key="frame" x="0.0" y="133.5" width="375" height="533.5"/>
+                    <rect key="frame" x="20" y="133.5" width="335" height="533.5"/>
                     <color key="backgroundColor" red="0.23529411764705882" green="0.25490196078431371" blue="0.32156862745098036" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                 </view>
             </subviews>
             <color key="backgroundColor" red="0.23529411759999999" green="0.25490196079999999" blue="0.32156862749999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="Oqd-Ej-1xl" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="bottom" multiplier="0.2" id="3NA-if-rAO"/>
-                <constraint firstItem="Oqd-Ej-1xl" firstAttribute="leading" secondItem="U0u-dc-rt0" secondAttribute="leading" id="6Mc-iO-BuY"/>
+                <constraint firstItem="Oqd-Ej-1xl" firstAttribute="leading" secondItem="U0u-dc-rt0" secondAttribute="leading" constant="20" id="6Mc-iO-BuY"/>
                 <constraint firstItem="U0u-dc-rt0" firstAttribute="bottom" secondItem="Oqd-Ej-1xl" secondAttribute="bottom" id="Cb0-QN-VFO"/>
                 <constraint firstItem="91q-nl-kWu" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="Gs0-CZ-bRs"/>
                 <constraint firstItem="Zdz-nd-u7k" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="4" id="QYu-uI-rC8"/>
                 <constraint firstItem="91q-nl-kWu" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="bottom" multiplier="0.1" id="ffS-cp-Pm3"/>
                 <constraint firstItem="U0u-dc-rt0" firstAttribute="trailing" secondItem="Zdz-nd-u7k" secondAttribute="trailing" constant="8" id="hkP-f4-aXC"/>
-                <constraint firstItem="U0u-dc-rt0" firstAttribute="trailing" secondItem="Oqd-Ej-1xl" secondAttribute="trailing" id="mC3-xy-2CS"/>
+                <constraint firstItem="U0u-dc-rt0" firstAttribute="trailing" secondItem="Oqd-Ej-1xl" secondAttribute="trailing" constant="20" id="mC3-xy-2CS"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="U0u-dc-rt0"/>
             <point key="canvasLocation" x="157.5" y="222.5"/>

@@ -20,6 +20,9 @@ open class RadarChartData: ChartData
     @objc open var highlightLineDashPhase = CGFloat(0.0)
     @objc open var highlightLineDashLengths: [CGFloat]?
     
+    @objc open var lineDashPhase = CGFloat(0.0)
+    @objc open var lineDashLengths: [CGFloat]?
+    
     /// Sets labels that should be drawn around the RadarChart at the end of each web line.
     @objc open var labels = [String]()
     

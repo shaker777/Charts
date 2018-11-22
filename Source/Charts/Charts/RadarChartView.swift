@@ -24,7 +24,7 @@ open class RadarChartView: PieRadarChartViewBase
     @objc open var innerWebLineWidth = CGFloat(0.75)
     
     /// color for the web lines that come from the center
-    @objc open var webColor = NSUIColor(red: 122/255.0, green: 122/255.0, blue: 122.0/255.0, alpha: 1.0)
+    @objc open var webColors = [NSUIColor(red: 122/255.0, green: 122/255.0, blue: 122.0/255.0, alpha: 1.0)]
     
     /// color for the web lines in between the lines that come from the center.
     @objc open var innerWebColor = NSUIColor(red: 122/255.0, green: 122/255.0, blue: 122.0/255.0, alpha: 1.0)
@@ -43,6 +43,16 @@ open class RadarChartView: PieRadarChartViewBase
     
     internal var _yAxisRenderer: YAxisRendererRadarChart!
     internal var _xAxisRenderer: XAxisRendererRadarChart!
+    
+    /// if true, the hole inside the chart will be drawn
+    private var _drawHoleEnabled = true
+    
+    private var _holeColor: NSUIColor? = NSUIColor.white
+    
+    /// indicates the size of the hole in the center of the piechart
+    ///
+    /// **default**: `0.5`
+    private var _holeRadiusPercent = CGFloat(0.5)
     
     public override init(frame: CGRect)
     {
@@ -106,12 +116,6 @@ open class RadarChartView: PieRadarChartViewBase
         let optionalContext = NSUIGraphicsGetCurrentContext()
         guard let context = optionalContext else { return }
         
-        if _xAxis.isEnabled
-        {
-            _xAxisRenderer.computeAxis(min: _xAxis._axisMinimum, max: _xAxis._axisMaximum, inverted: false)
-        }
-        
-        _xAxisRenderer?.renderAxisLabels(context: context)
         
         if drawWeb
         {
@@ -137,7 +141,15 @@ open class RadarChartView: PieRadarChartViewBase
         
         _yAxisRenderer.renderAxisLabels(context: context)
 
+        if _xAxis.isEnabled
+        {
+            _xAxisRenderer.computeAxis(min: _xAxis._axisMinimum, max: _xAxis._axisMaximum, inverted: false)
+        }
+        
+        _xAxisRenderer?.renderAxisLabels(context: context)
+        
         renderer.drawValues(context: context)
+        
 
         legendRenderer.renderLegend(context: context)
 
@@ -229,4 +241,63 @@ open class RadarChartView: PieRadarChartViewBase
     
     /// - returns: The range of y-values this chart can display.
     @objc open var yRange: Double { return _yAxis.axisRange }
+    
+    /// - returns: webLineHoleRadius - bullet at the end of web line
+    @objc open var webLineHoleRadius: CGFloat { return webLineWidth * 3 }
+
+    
+    /// The color for the hole that is drawn in the center of the PieChart (if enabled).
+    ///
+    /// - note: Use holeTransparent with holeColor = nil to make the hole transparent.*
+    @objc open var holeColor: NSUIColor?
+        {
+        get
+        {
+            return _holeColor
+        }
+        set
+        {
+            _holeColor = newValue
+            setNeedsDisplay()
+        }
+    }
+    
+    /// `true` if the hole in the center of the pie-chart is set to be visible, `false` ifnot
+    @objc open var drawHoleEnabled: Bool
+        {
+        get
+        {
+            return _drawHoleEnabled
+        }
+        set
+        {
+            _drawHoleEnabled = newValue
+            setNeedsDisplay()
+        }
+    }
+    
+    /// - returns: `true` if the hole in the center of the pie-chart is set to be visible, `false` ifnot
+    @objc open var isDrawHoleEnabled: Bool
+        {
+        get
+        {
+            return drawHoleEnabled
+        }
+    }
+    
+    /// the radius of the hole in the center of the piechart in percent of the maximum radius (max = the radius of the whole chart)
+    ///
+    /// **default**: 0.5 (50%) (half the pie)
+    @objc open var holeRadiusPercent: CGFloat
+        {
+        get
+        {
+            return _holeRadiusPercent
+        }
+        set
+        {
+            _holeRadiusPercent = newValue
+            setNeedsDisplay()
+        }
+    }
 }

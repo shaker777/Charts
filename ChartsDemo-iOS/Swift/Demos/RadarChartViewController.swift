@@ -42,7 +42,7 @@ class RadarChartViewController: DemoBaseViewController {
         chartView.chartDescription?.enabled = false
         chartView.webLineWidth = 1
         chartView.innerWebLineWidth = 1
-        chartView.webColor = .lightGray
+//        chartView.webColor = .lightGray
         chartView.innerWebColor = .lightGray
         chartView.webAlpha = 1
         

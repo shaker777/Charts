@@ -45,8 +45,6 @@ open class LineRadarRenderer: LineScatterCandleRadarRenderer
         
         // filled is usually drawn with less alpha
         context.setAlpha(fillAlpha)
-        
-        context.setFillColor(fillColor.cgColor)
         context.fillPath()
         
         context.restoreGState()
