@@ -273,6 +273,9 @@ open class PieChartRenderer: DataRenderer
                 
                 path.closeSubpath()
                 paths.append(path);
+            }else{
+                path.closeSubpath()
+                paths.append(path);
             }
             
             angle += sliceAngle * CGFloat(phaseX)
@@ -392,6 +395,8 @@ open class PieChartRenderer: DataRenderer
         context.saveGState()
         defer { context.restoreGState() }
         
+        var valuesTextRects:[CGRect] = []
+        
         for i in 0 ..< dataSets.count{
             guard let dataSet = dataSets[i] as? IPieChartDataSet else { continue }
             let drawValues = dataSet.isDrawValuesEnabled
@@ -504,6 +509,35 @@ open class PieChartRenderer: DataRenderer
                     valueDrawRadius = CGFloat(totalRadius - valueTextRadius)
                     valueDrawPoint = CGPoint(x: valueDrawRadius * sliceXBase + center.x, y: valueDrawRadius * sliceYBase + center.y - valueTextCenter.y)
                 }
+                
+                var currentTextRect: CGRect = CGRect(x: valueDrawPoint.x,
+                                                     y: valueDrawPoint.y,
+                                                     width: valueTextSize.width,
+                                                     height: valueTextSize.height)
+                //FIXME: intersection depp
+                for rect in valuesTextRects{
+//                    while rect.intersects(currentTextRect){
+//                        
+//                    }
+                    if rect.intersects(currentTextRect){
+//                        let intersection = rect.intersection(currentTextRect)
+//                        let p = CGPoint(x: currentTextRect.midX - rect.midX, y: currentTextRect.midY - rect.midY )
+//                        print("Intersection \(valueText) - \(intersection) - \(p)")
+//                        let intersectionDistance = sqrt(pow(intersection.width, 2) + pow(intersection.height,2));
+//                        let intersectionDistance = min (intersection.width, intersection.height)
+//                        let vec = CGPoint(x: rect.origin.x - currentTextRect.origin.x, y: rect.origin.y - currentTextRect.origin.y)
+//                        var len =  sqrt(vec.x*vec.x + vec.y*vec.y)
+//                        let normalize = len > 0 ? CGPoint(x: vec.x/len, y: vec.y/len) : CGPoint.zero
+//                        print("")
+                        valueDrawPoint = CGPoint(x: valueDrawPoint.x + rect.width, y:valueDrawPoint.y + currentTextRect.height)
+                        currentTextRect = CGRect(x: valueDrawPoint.x,
+                                                             y: valueDrawPoint.y,
+                                                             width: valueTextSize.width,
+                                                             height: valueTextSize.height)
+                    }
+                }
+
+                valuesTextRects.append(currentTextRect)
                 
                 ChartUtils.drawText(
                     context: context,

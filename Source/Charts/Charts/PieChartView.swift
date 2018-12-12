@@ -82,6 +82,8 @@ open class PieChartView: PieRadarChartViewBase
 
     private var _totalCircleFont: UIFont = UIFont.systemFont(ofSize: 12)
 
+    //maximum radius of slice in VR chart
+    private var _maxRadiusPrecent: CGFloat = 1.3
     
     public override init(frame: CGRect)
     {
@@ -334,7 +336,13 @@ open class PieChartView: PieRadarChartViewBase
             for j in 0 ..< entryCount
             {
                 guard let e = set.entryForIndex(j) else { continue }
-                _drawRadii.append(CGFloat(e.x/e.y) * radius)
+                
+                let maxSliceRadius = self.radius * self.maxRadiusPrecent
+                let rad = CGFloat(e.x/e.y) * radius
+
+                _drawRadii.append(min(maxSliceRadius,rad))
+//                _drawRadii.append(CGFloat(e.x/e.y) * radius)
+
             }
         }
         return _drawRadii;
@@ -536,10 +544,11 @@ open class PieChartView: PieRadarChartViewBase
             {
                 guard let e = set.entryForIndex(j) else { continue }
                 //scale = min(1.8, max(1, ))
-                scale = min(scale, max(0.5, CGFloat(e.y/e.x)))
+                scale = max(scale, min(maxRadiusPrecent, CGFloat(e.x/e.y)))
+//                scale = min(scale, max(0.5, CGFloat(e.y/e.x)))
             }
         }
-        return scale
+        return 1/scale
     }
     
     /// - returns: The circlebox, the boundingbox of the pie-chart slices
@@ -745,6 +754,19 @@ open class PieChartView: PieRadarChartViewBase
         set
         {
             _totalCircleFont = newValue
+            setNeedsDisplay()
+        }
+    }
+    
+    @objc open var maxRadiusPrecent: CGFloat
+        {
+        get
+        {
+            return _maxRadiusPrecent
+        }
+        set
+        {
+            _maxRadiusPrecent = newValue
             setNeedsDisplay()
         }
     }
