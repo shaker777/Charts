@@ -27,4 +27,19 @@ public protocol IAxisValueFormatter: class
     func stringForValue(_ value: Double,
                         axis: AxisBase?) -> String
     
+//    func stringForIndex(_ index: Int,
+//                        axis: AxisBase?) -> String?
+    
 }
+
+//extension IAxisValueFormatter{
+//    func stringForValue(_ value: Double,
+//                        axis: AxisBase?) -> String?{
+//        return ""
+//    }
+//
+//    func stringForIndex(_ index: Int,
+//                        axis: AxisBase?) -> String?{
+//        return ""
+//    }
+//}
