@@ -19,6 +19,7 @@ import CoreGraphics
 
 open class RadarChartRenderer: LineRadarRenderer
 {
+    /*
     private lazy var accessibilityXLabels: [String] = {
         var labels: [String] = []
 
@@ -33,6 +34,7 @@ open class RadarChartRenderer: LineRadarRenderer
 
         return labels
     }()
+     */
 
     @objc open weak var chart: RadarChartView?
 
@@ -85,6 +87,21 @@ open class RadarChartRenderer: LineRadarRenderer
     internal func drawDataSet(context: CGContext, dataSet: IRadarChartDataSet, mostEntries: Int)
     {
         guard let chart = chart else { return }
+        
+        
+        let accessibilityXLabels: [String] = {
+            var labels: [String] = []
+
+            guard let formatter = chart.xAxis.valueFormatter else { return [] }
+
+            let maxEntryCount = chart.data?.maxEntryCountSet?.entryCount ?? 0
+            for i in stride(from: 0, to: maxEntryCount, by: 1)
+            {
+                labels.append(formatter.stringForValue(Double(i), axis: chart.xAxis))
+            }
+
+            return labels
+        }()
         
         context.saveGState()
         
